@@ -1,0 +1,26 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+
+# Secrets — never commit. Only .env.example is tracked.
+.env
+.streamlit/secrets.toml
+
+# Raw API/CSV responses are cached locally for provenance but not committed (size).
+data/raw/*
+!data/raw/.gitkeep
+
+# Run logs
+logs/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

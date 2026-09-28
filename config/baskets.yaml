@@ -1,0 +1,30 @@
+# Thali baskets. Quantities = one home-cooked single-person thali.
+# Portions are domain assumptions (home-cooked katori/roti logic), documented per line.
+# `weight` = basket importance multiplier; kept 1.0 so quantity drives cost contribution.
+# Change quantities freely — this file IS the project's opinion.
+#
+# Syntax note (M0): the originally supplied file put several `key: value` pairs on one line
+# without braces, which is invalid YAML (ScannerError). Each item is now a flow mapping.
+# Values and comments are unchanged.
+
+veg_thali:
+  - { ingredient: rice,        qty: 80,  unit: g,  weight: 1.0 }  # ~1 katori cooked, from 80g raw
+  - { ingredient: atta,        qty: 60,  unit: g,  weight: 1.0 }  # 2 rotis
+  - { ingredient: tur_dal,     qty: 30,  unit: g,  weight: 1.0 }  # 1 katori dal, raw
+  - { ingredient: potato,      qty: 100, unit: g,  weight: 1.0 }  # aloo sabzi
+  - { ingredient: onion,       qty: 40,  unit: g,  weight: 1.0 }  # sabzi + dal tadka
+  - { ingredient: tomato,      qty: 40,  unit: g,  weight: 1.0 }  # sabzi + tadka
+  - { ingredient: cooking_oil, qty: 15,  unit: g,  weight: 1.0 }  # tadka + sabzi
+  - { ingredient: salt,        qty: 5,   unit: g,  weight: 1.0 }
+  - { ingredient: sugar,       qty: 5,   unit: g,  weight: 1.0 }
+  - { ingredient: milk,        qty: 50,  unit: ml, weight: 1.0 }  # small curd/kheer proxy
+
+nonveg_thali:
+  - { ingredient: rice,        qty: 80,  unit: g,     weight: 1.0 }
+  - { ingredient: atta,        qty: 60,  unit: g,     weight: 1.0 }
+  - { ingredient: tur_dal,     qty: 20,  unit: g,     weight: 1.0 }  # smaller dal portion
+  - { ingredient: egg,         qty: 2,   unit: piece, weight: 1.0 }  # protein — SEE VERIFY flag in map
+  - { ingredient: onion,       qty: 60,  unit: g,     weight: 1.0 }  # curry masala
+  - { ingredient: tomato,      qty: 60,  unit: g,     weight: 1.0 }
+  - { ingredient: cooking_oil, qty: 20,  unit: g,     weight: 1.0 }
+  - { ingredient: salt,        qty: 5,   unit: g,     weight: 1.0 }

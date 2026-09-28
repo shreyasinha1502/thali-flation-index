@@ -1,0 +1,5 @@
+# Runtime dependencies. Each one is justified; add nothing without a reason.
+requests==2.34.2   # HTTP for government APIs / CSV downloads
+pandas==3.0.6      # tabular normalisation, coverage + index maths
+pydantic==2.13.5   # schema validation of every ingested row
+PyYAML==6.0.3      # basket / commodity-map / index configs

@@ -1,0 +1,7 @@
+# Index settings. base_date is intentionally NULL — set it only AFTER M2 coverage report,
+# to a real date with full basket coverage. Never pick a date you don't have real data for.
+base_date: null            # e.g. "2024-01-01" — choose from real coverage, then rebase to 100
+base_value: 100
+cities: ["Delhi"]          # start with ONE, scale after pipeline works
+missing_policy: "drop"     # if any required ingredient price missing for a city/date -> thali = MISSING
+allow_synthetic: false     # hard gate. must stay false.
