@@ -14,6 +14,7 @@ import json
 import logging
 import os
 import sys
+import traceback
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -50,11 +51,21 @@ class JsonFormatter(logging.Formatter):
         return redact(json.dumps(payload, default=str, ensure_ascii=False))
 
 
+def _redacting_excepthook(exc_type, exc, tb) -> None:  # type: ignore[no-untyped-def]
+    """Uncaught tracebacks bypass logging; redact them too (a URL may carry the api-key)."""
+    text = "".join(traceback.format_exception(exc_type, exc, tb))
+    sys.stderr.write(redact(text))
+
+
 def setup_logging(level: str | None = None, log_file: Path | None = None) -> None:
-    """Configure the root logger once: JSON to stderr, and optionally to a JSONL file."""
+    """Configure the root logger once: JSON to stderr, optionally a JSONL file.
+
+    Also installs a redacting sys.excepthook.
+    """
     global _CONFIGURED
     if _CONFIGURED:
         return
+    sys.excepthook = _redacting_excepthook
     level = (level or os.environ.get("THALI_LOG_LEVEL") or "INFO").upper()
     formatter = JsonFormatter()
     handlers: list[logging.Handler] = [logging.StreamHandler(sys.stderr)]

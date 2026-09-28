@@ -1,0 +1,26 @@
+{
+  "body_file": "without_key.json",
+  "sha256": "ef57418d0f0a24d74c66abc6872c2dfccc748e4b9dc39ab380c96bb5813d75e3",
+  "n_bytes": 46,
+  "fetched_at": "2026-09-28T06:36:12.422904+00:00",
+  "url": "https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070?format=json&limit=10&offset=0",
+  "status": 400,
+  "content_type": "application/json",
+  "source": "datagov_mandi",
+  "user_agent": "thaliflation/0.1.0 (food-price research)",
+  "attempts": [
+    {
+      "attempt": 1,
+      "status": 400,
+      "at": "2026-09-28T06:36:12.422904+00:00"
+    }
+  ],
+  "response_headers": {
+    "Content-Length": "46",
+    "Content-Type": "application/json",
+    "Date": "Mon, 28 Sep 2026 06:36:11 GMT",
+    "X-Generator": "tyk.io",
+    "Via": "1.1 ID-7716077341207407 uproxy-3, 1.1 ID-7716077341203407 uproxy-3",
+    "Connection": "Keep-alive"
+  }
+}

@@ -26,7 +26,7 @@ index(city, date)      = thali_cost(city, date) / thali_cost(city, base_date) ×
 
 | # | Source | Kind | Status (last checked) |
 |---|--------|------|------------------------|
-| 1 | data.gov.in Mandi API `9ef84268-d588-465a-a308-a864a43d0070` | wholesale, daily snapshot | Gateway **live** (2026-09-28). No data pulled yet: the public sample key returns HTTP 429 on every call, so a personal key is needed. |
+| 1 | data.gov.in Mandi API `9ef84268-d588-465a-a308-a864a43d0070` | wholesale, daily snapshot | Gateway **live** (2026-09-28). No data pulled yet: the public sample key only returns 429/403/504, so a personal `DATA_GOV_API_KEY` is needed. The gateway tarpits the `python-requests` UA (see docs/decisions.md D7). |
 | 2 | DoCA Price Monitoring Division (fcainfoweb.nic.in) | retail, 38 commodities, ~550 centres | Not yet investigated (planned for M2) |
 | 3 | data.gov.in per-commodity daily/weekly retail price CSVs | retail history backfill | Not yet investigated (M2) |
 
@@ -60,7 +60,11 @@ tests/             guardrails + tests on real captured fixtures
 
 - [x] **M0** Scaffold: venv, pinned requirements, `.env.example`, JSON logging with secret
   redaction, configs, guardrail tests
-- [ ] **M1** Mandi API ingestion: pagination, retry/backoff, raw cache, provenance, one real day
+- [~] **M1** Mandi API ingestion
+  - [x] part 1: retry/backoff transport, byte-exact raw cache, failure records, key redaction,
+    liveness probe (`scripts/probe_mandi.py`), tests on real captured gateway responses
+  - [ ] part 2 (**blocked on `DATA_GOV_API_KEY`**): schema from a real 200 page, pagination,
+    provenance-stamped normalized table, one real day end-to-end
 - [ ] **M2** Historical CSV backfill + coverage report
 - [ ] **M3** Basket / mapping configs + unit-conversion tests on real rows
 - [ ] **M4** Missing-aware index engine + data-quality panel
