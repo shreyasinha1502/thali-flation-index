@@ -84,3 +84,37 @@ daily run, a thundering herd isn't a concern. Backoff is 2, 4, 8, … s, capped 
 **D12. A fetch with no response still leaves a record.** When every attempt fails at the
 connection level, `write_failure()` writes a meta-only record (`status: null`, attempt history)
 so the gap stays visible in the raw audit trail and later coverage reports.
+
+## Source #2 ingestion (DoCA homepage) — 2026-09-29
+
+**D13. Priority changed: user asked for everything to be done without waiting on them.** The
+`DATA_GOV_API_KEY` blocker remains. Creating the account and key is a human step (account
+creation and credentials can't be automated here). Source #2 is the spec's preferred source
+(`preferred_source: DoCA_retail` for every ingredient), so it was taken up next. Full inventory
+is in docs/sources.md.
+
+**D14. The DoCA report generator is CAPTCHA-gated and is not automated.** No CAPTCHA
+solving, and no hunting for an undocumented mobile-app backend to get around it. The public
+homepage, which needs no CAPTCHA, is ingested instead. It publishes one "As on" date of
+All-India averages, so it is snapshotted daily and history accumulates going forward. Nothing
+is backfilled.
+
+**D15. Strict HTML parsing with stdlib `html.parser`.** This avoids adding bs4 or lxml, which
+aren't on the approved list. The parser expects the observed structure:
+- an `<h2>` holding "All India Average (Retail|Wholesale) Price(<unit>) As on DD/MM/YYYY"
+- `<caption>` elements holding "… Price - <group>"
+- a header row of exactly `Commodity | Prices`
+
+Any deviation raises `DocaParseError`, the run fails and nothing is written. A non-numeric
+price cell is logged and skipped, never set to zero.
+
+**D16. Storage is one CSV per as-on date, written only when the published values change.**
+The raw HTML differs on every fetch (CAPTCHA text, viewstate), so change detection hashes the
+published values (as_on, price_type, commodity, price), not the bytes. A revised page for an
+already-stored date is written as a new file, and readers take the latest fetch. CSVs are small
+(64 rows) and diff cleanly in git, which suits the M7 commit-back workflow.
+
+**D17. `unit_stated` is stored verbatim; units are trusted only via config.** The page's
+"₹/Kg" retail header is demonstrably wrong for several "Additional Commodities" (see
+docs/sources.md). The stored rows keep what the page says. Which unit a price is in, for index
+maths, is asserted per ingredient in `config/commodity_map.yaml`.
