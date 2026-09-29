@@ -1,3 +1,5 @@
+# Touching this file makes Streamlit Community Cloud re-provision (full restart) the app.
+# Needed when src/ changes are not picked up by a running process (see docs/decisions.md D35).
 # Dependencies for the Streamlit dashboard (Streamlit Community Cloud reads this file first,
 # because it sits next to the entrypoint app/streamlit_app.py). Pins match ../requirements.txt.
 requests==2.34.2

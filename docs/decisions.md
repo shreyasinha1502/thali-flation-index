@@ -245,3 +245,14 @@ isn't installed):
   (L 0.769 > 0.67), so the darker saffron is used.
 
 Charts label both series directly, so identity never relies on colour alone.
+
+**D35. Streamlit Cloud redeploys don't always restart the Python process.** After the non-veg
+deploy, the live app served the new `dashboard.js`, which is read from disk each run, together
+with the old payload shape from the stale in-memory Python code. The fix has two parts:
+1. `app/streamlit_app.py` reloads the package when the content hash of `src/` changes, and uses
+   that hash in the cache key.
+2. When the running process itself is stale, touching `app/requirements.txt` makes Community
+   Cloud re-provision the app.
+
+The frontend never shows wrong numbers in this state. A payload of an unexpected shape shows
+"updating, refresh in a minute".
