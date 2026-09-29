@@ -81,5 +81,5 @@ Gaps are shown, never filled. Denominator = calendar days since each series' fir
 
 ## Fetch log (raw cache)
 
-5 fetches recorded, 0 failed.
+6 fetches recorded, 0 failed.
 
