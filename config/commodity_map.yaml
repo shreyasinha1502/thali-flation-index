@@ -6,15 +6,25 @@
 #            string from a real M1 API response, not assume these verbatim.
 # price_factor: multiply source price by this to get price per recipe base unit (1 g / 1 ml / 1 piece).
 #   per_kg -> 0.001 | per_quintal -> 0.00001 | per_litre -> 0.001 | per_dozen -> 0.08333 | per_piece -> 1
+#
+# M3 (2026-09-29): source_commodity strings now match EXACTLY what DoCA's live homepage
+# publishes (retail table, as on 29/09/2026; fixture tests/fixtures/doca_home/). Changed:
+#   "Mustard Oil" -> "Mustard Oil (Packed)"   "Salt" -> "Salt Pack (Iodised)"
+#   "Milk"        -> "Milk @"                 "Egg"  -> "Eggs"
+# Units: the page header says "₹/Kg" for all retail rows. Milk carries an "@" marker whose
+# footnote is not on the page; per_litre is kept as this config's stated assumption.
+# Egg: "Eggs" IS published, but its unit (dozen vs kg) is NOT stated anywhere verifiable, and the
+# ₹/Kg header is demonstrably wrong for other "Additional Commodities" -> stays VERIFY -> the
+# non-veg thali is EXCLUDED from the index until the unit is confirmed. See docs/sources.md.
 
-rice:        { source_commodity: "Rice",         source_unit: per_kg,      price_factor: 0.001,   source_status: CONFIRMED, preferred_source: DoCA_retail }
-atta:        { source_commodity: "Atta (Wheat)", source_unit: per_kg,      price_factor: 0.001,   source_status: CONFIRMED, preferred_source: DoCA_retail }
-tur_dal:     { source_commodity: "Tur/Arhar Dal",source_unit: per_kg,      price_factor: 0.001,   source_status: CONFIRMED, preferred_source: DoCA_retail }
-potato:      { source_commodity: "Potato",       source_unit: per_kg,      price_factor: 0.001,   source_status: CONFIRMED, preferred_source: DoCA_retail }
-onion:       { source_commodity: "Onion",        source_unit: per_kg,      price_factor: 0.001,   source_status: CONFIRMED, preferred_source: DoCA_retail }
-tomato:      { source_commodity: "Tomato",       source_unit: per_kg,      price_factor: 0.001,   source_status: CONFIRMED, preferred_source: DoCA_retail }
-cooking_oil: { source_commodity: "Mustard Oil",  source_unit: per_kg,      price_factor: 0.001,   source_status: CONFIRMED, preferred_source: DoCA_retail }
-salt:        { source_commodity: "Salt",         source_unit: per_kg,      price_factor: 0.001,   source_status: CONFIRMED, preferred_source: DoCA_retail }
-sugar:       { source_commodity: "Sugar",        source_unit: per_kg,      price_factor: 0.001,   source_status: CONFIRMED, preferred_source: DoCA_retail }
-milk:        { source_commodity: "Milk",         source_unit: per_litre,   price_factor: 0.001,   source_status: CONFIRMED, preferred_source: DoCA_retail }
-egg:         { source_commodity: "Egg",          source_unit: per_dozen,   price_factor: 0.08333, source_status: VERIFY,    preferred_source: "NECC or verify DoCA-38 set" }
+rice:        { source_commodity: "Rice",                source_unit: per_kg,    price_factor: 0.001,   source_status: CONFIRMED, preferred_source: DoCA_retail }
+atta:        { source_commodity: "Atta (Wheat)",        source_unit: per_kg,    price_factor: 0.001,   source_status: CONFIRMED, preferred_source: DoCA_retail }
+tur_dal:     { source_commodity: "Tur/Arhar Dal",       source_unit: per_kg,    price_factor: 0.001,   source_status: CONFIRMED, preferred_source: DoCA_retail }
+potato:      { source_commodity: "Potato",              source_unit: per_kg,    price_factor: 0.001,   source_status: CONFIRMED, preferred_source: DoCA_retail }
+onion:       { source_commodity: "Onion",               source_unit: per_kg,    price_factor: 0.001,   source_status: CONFIRMED, preferred_source: DoCA_retail }
+tomato:      { source_commodity: "Tomato",              source_unit: per_kg,    price_factor: 0.001,   source_status: CONFIRMED, preferred_source: DoCA_retail }
+cooking_oil: { source_commodity: "Mustard Oil (Packed)",source_unit: per_kg,    price_factor: 0.001,   source_status: CONFIRMED, preferred_source: DoCA_retail }
+salt:        { source_commodity: "Salt Pack (Iodised)", source_unit: per_kg,    price_factor: 0.001,   source_status: CONFIRMED, preferred_source: DoCA_retail }
+sugar:       { source_commodity: "Sugar",               source_unit: per_kg,    price_factor: 0.001,   source_status: CONFIRMED, preferred_source: DoCA_retail }
+milk:        { source_commodity: "Milk @",              source_unit: per_litre, price_factor: 0.001,   source_status: CONFIRMED, preferred_source: DoCA_retail }
+egg:         { source_commodity: "Eggs",                source_unit: per_dozen, price_factor: 0.08333, source_status: VERIFY,    preferred_source: "NECC or verify DoCA-38 set" }

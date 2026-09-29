@@ -118,3 +118,26 @@ already-stored date is written as a new file, and readers take the latest fetch.
 "₹/Kg" retail header is demonstrably wrong for several "Additional Commodities" (see
 docs/sources.md). The stored rows keep what the page says. Which unit a price is in, for index
 maths, is asserted per ingredient in `config/commodity_map.yaml`.
+
+## M3: configs + unit conversion — 2026-09-29
+
+**D18. The commodity strings in `commodity_map.yaml` now match the live page exactly.** The
+config said to match the real response, not the guesses. Changed: `Mustard Oil` →
+`Mustard Oil (Packed)`, `Salt` → `Salt Pack (Iodised)`, `Milk` → `Milk @`, `Egg` → `Eggs`.
+A test asserts every mapped string appears in the real 2026-09-29 page.
+
+**D19. The exact unit factor is used, and the declared factor is only cross-checked.**
+`price_factor` must agree with `source_unit` within 0.1 % or loading fails, which catches
+typos such as 0.01 for per_kg. The maths then uses the exact value, e.g. 1/12 for
+per_dozen, not the config's rounded 0.08333. Recipe and source units must be compatible
+(g ↔ kg/quintal, ml ↔ litre, piece ↔ dozen/piece), otherwise `ConfigError` is raised.
+
+**D20. Egg stays VERIFY, so the non-veg thali is excluded.** "Eggs" is published (₹83.81 on
+2026-09-29), but its unit isn't stated verifiably, and the page's "₹/Kg" header is provably
+wrong for other additional commodities. Assuming "per dozen" would be inventing a unit. The
+non-veg thali will be computed once a source confirms the unit.
+
+**D21. Milk uses `per_litre`, the config's assumption, with a caveat.** The page marks milk
+with "@", and the footnote isn't on the page. `per_litre` is what the config asserts and
+fits an exception marker on a "₹/Kg" table. Impact if wrong: 50 ml at ₹61.31/L is ₹3.07,
+versus ₹3.16 treating it as ₹/kg at about 1.03 g/ml, about 0.4 % of the veg thali.
