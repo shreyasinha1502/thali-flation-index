@@ -202,3 +202,19 @@ and Linux writes LF. All writers now pass `lineterminator`/`newline="\n"`. `.git
 marks `data/raw/**` and `tests/fixtures/**` as `-text`, so git never alters sha256-verified
 bytes, and sets derived outputs to `eol=lf`. The stored 2026-09-29 snapshot CSV was
 re-normalised to LF. Its values are unchanged, and the dedupe hash covers values, not bytes.
+
+## Dashboard frontend — 2026-09-29
+
+**D31. The custom frontend is mounted with `st.components.v2`.** Styles are isolated in a shadow
+root, there is no iframe, and height is automatic. It stays on Streamlit Community Cloud at the
+same URL, with no new Python dependency and no JS libraries: charts are hand-built SVG. The only
+external asset is Google Fonts (Fraunces, Inter). The frontend renders only the JSON payload from
+`dashboard_data.build_payload()`, which reads the committed `data/processed/` outputs:
+- Missing values reach the frontend as `null`, and the trend line breaks at them.
+- The coverage grid marks each missing day and ingredient with a hatched red cell.
+- A guardrail test forbids `Math.random`, `crypto.getRandomValues` and faker in `app/**/*.js`.
+- Native `st.dataframe` tables in an expander provide the table view for screen readers.
+
+**D32. Dates are formatted from local date parts.** An early build labelled the 29 Sep point
+"28 Sep", because `toISOString()` shifts local midnight (IST) back to the previous UTC day. It
+was caught in visual QA and fixed before shipping.

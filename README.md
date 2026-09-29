@@ -1,5 +1,7 @@
 # Thali-flation Index
 
+**Live dashboard:** [https://thali-flation-index-camgsz4cceqnctimtusgw8.streamlit.app/](https://thali-flation-index-camgsz4cceqnctimtusgw8.streamlit.app/) · data refreshed daily at 19:00 IST by GitHub Actions
+
 A hyperlocal, high-frequency **"cost of a thali"** index for India, computed only from real
 government ingredient prices. It can be compared against official CPI, which is aggregate and
 published about 1.5 months late, to test whether it leads food inflation.
@@ -67,8 +69,8 @@ tests/             guardrails + tests on real captured fixtures
 - [x] **M3** Typed configs, commodity strings matched to the live page, conversion tests on real rows
 - [x] **M4** Missing-aware index engine + data-quality panel (veg thali All India = ₹22.30 = 100 on 2026-09-29)
 - [ ] **M5** Analysis: movers are implemented; volatility, anomalies and CPI lead/lag need weeks of real history (and a CPI source, pending approval)
-- [x] **M6** Streamlit dashboard with an always-visible coverage/gaps panel. Menu-price layer: **no source chosen yet**
-- [~] **M7** Daily GitHub Actions workflow + Streamlit Cloud config written; needs the repo pushed and the app connected (steps below)
+- [x] **M6** Dashboard: custom frontend (`app/frontend/`, mounted with `st.components.v2`) with a thali-plate visual, gap-aware trend, ingredient breakdown, coverage grid and always-visible gaps panel, plus native data tables. Menu-price layer: **no source chosen yet**
+- [x] **M7** Deployed on Streamlit Community Cloud ([live](https://thali-flation-index-camgsz4cceqnctimtusgw8.streamlit.app/)); daily GitHub Actions snapshot commits real data (first run green on 2026-09-29)
 
 See `docs/sources.md` for what each source really provides, and `docs/decisions.md` for why.
 

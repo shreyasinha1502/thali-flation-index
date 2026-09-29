@@ -45,6 +45,15 @@ def test_no_synthetic_data_generators_in_code() -> None:
     assert not offenders, "Synthetic-data / gap-filling patterns found:\n" + "\n".join(offenders)
 
 
+def test_no_random_values_in_frontend_js() -> None:
+    offenders = [
+        str(f.relative_to(REPO_ROOT))
+        for f in (REPO_ROOT / "app").rglob("*.js")
+        if re.search(r"Math\.random|crypto\.getRandomValues|faker", f.read_text(encoding="utf-8"))
+    ]
+    assert not offenders, f"random value generation in frontend code: {offenders}"
+
+
 def test_allow_synthetic_hard_gate_is_false() -> None:
     cfg = yaml.safe_load((CONFIG_DIR / "index.yaml").read_text(encoding="utf-8"))
     assert cfg["allow_synthetic"] is False
