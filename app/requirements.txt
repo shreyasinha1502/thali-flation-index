@@ -1,0 +1,7 @@
+# Dependencies for the Streamlit dashboard (Streamlit Community Cloud reads this file first,
+# because it sits next to the entrypoint app/streamlit_app.py). Pins match ../requirements.txt.
+requests==2.34.2
+pandas==3.0.6
+pydantic==2.13.5
+PyYAML==6.0.3
+streamlit==1.64.0   # dashboard (spec-approved); brings altair for charts

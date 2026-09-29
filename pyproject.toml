@@ -26,3 +26,6 @@ addopts = "-ra"
 markers = [
     "live: hits a real remote source over the network (deselect with -m 'not live')",
 ]
+
+[tool.ruff.lint.per-file-ignores]
+"app/*" = ["RUF001"]  # user-facing text intentionally uses ×, ↔, · symbols
