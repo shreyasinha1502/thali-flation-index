@@ -20,6 +20,8 @@
   --steel-3: #a7a198;
   --shadow: 0 1px 2px rgba(40, 25, 5, 0.06), 0 12px 32px -12px rgba(40, 25, 5, 0.18);
   --grid: rgba(80, 55, 20, 0.1);
+  --s-veg: #d97706;
+  --s-nonveg: #2a78d6;
   color-scheme: light;
   display: block;
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -43,6 +45,8 @@
     --steel-3: #1d1b19;
     --shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 20px 50px -20px rgba(0, 0, 0, 0.7);
     --grid: rgba(255, 255, 255, 0.07);
+    --s-veg: #d97706;
+    --s-nonveg: #3987e5;
     color-scheme: dark;
   }
 }
@@ -106,6 +110,23 @@ a:hover { text-decoration: underline; }
 .katori { cursor: pointer; transform-box: fill-box; transform-origin: center; animation: pop 0.7s cubic-bezier(.3, 1.4, .5, 1) both; outline: none; }
 .katori:hover .bowl-rim, .katori:focus .bowl-rim { stroke: var(--accent); stroke-width: 3; }
 .plate-note { text-align: center; font-size: 12px; color: var(--muted); margin-top: 6px; }
+
+
+/* thali toggle (segmented control) */
+.seg { display: inline-flex; gap: 4px; padding: 4px; border-radius: 14px; background: var(--surface-2); border: 1px solid var(--border); margin-bottom: 18px; }
+.seg button {
+  font: inherit; font-size: 14px; font-weight: 600; color: var(--text-2); background: transparent; border: 0; cursor: pointer;
+  padding: 8px 14px; border-radius: 10px; display: inline-flex; align-items: center; gap: 8px; transition: background .2s, color .2s, box-shadow .2s;
+}
+.seg button .p { font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums; }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--text); box-shadow: 0 2px 10px -4px rgba(0, 0, 0, .35), inset 0 0 0 1.5px var(--sc); }
+.seg button[aria-pressed="true"] .p { color: var(--text); }
+.seg button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.swatch { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--sc); }
+.fade { animation: fadeIn .45s ease both; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+.kpi .v small { font-size: 15px; color: var(--muted); font-weight: 600; margin-left: 6px; }
+.fill.nonveg { background: linear-gradient(90deg, #7fb2ee, var(--s-nonveg)); }
 
 /* ---- KPI strip ------------------------------------------------------------------ */
 .kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }

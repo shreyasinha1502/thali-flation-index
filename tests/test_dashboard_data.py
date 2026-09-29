@@ -34,22 +34,34 @@ def processed(doca_rows: list[DocaPriceRow], tmp_path: Path) -> Path:
 def test_payload_carries_exact_real_values(processed: Path) -> None:
     p = build_payload(date(2026, 9, 29), processed)
     json.dumps(p, allow_nan=False)  # no NaN/inf can reach the frontend
-    assert p["latest"] == {"date": "2026-09-29", "cost": pytest.approx(22.29725), "index": 100.0}
-    assert p["previous"] is None
-    assert [i["ingredient"] for i in p["items"]][:2] == ["tur_dal", "rice"]
-    assert sum(i["cost"] for i in p["items"]) == pytest.approx(22.29725)
-    assert sum(i["share"] for i in p["items"]) == pytest.approx(1.0)
-    assert p["nonveg"]["status"] == "EXCLUDED"
+    assert p["order"] == ["veg_thali", "nonveg_thali"]
+    veg, nonveg = p["thalis"]["veg_thali"], p["thalis"]["nonveg_thali"]
+    assert veg["latest"] == {"date": "2026-09-29", "cost": pytest.approx(22.29725), "index": 100.0}
+    assert veg["previous"] is None
+    assert [i["ingredient"] for i in veg["items"]][:2] == ["tur_dal", "rice"]
+    assert sum(i["share"] for i in veg["items"]) == pytest.approx(1.0)
+    # non-veg: egg per dozen (DoCA's own stated unit) -> 2 eggs = 2 * 83.81 / 12
+    assert nonveg["status"] == "OK" and nonveg["latest"]["cost"] == pytest.approx(
+        32.297533, abs=1e-6
+    )
+    egg = nonveg["items"][0]
+    assert egg["ingredient"] == "egg" and egg["cost"] == pytest.approx(2 * 83.81 / 12)
+    assert egg["source_unit"] == "per_dozen" and egg["share"] == pytest.approx(
+        13.968333 / 32.297533
+    )
+    assert [r["label"] for r in p["coverage"]["rows"]][-1] == "Eggs"  # union of both baskets
+    assert len(p["coverage"]["rows"]) == 11
     assert p["geos_without_source"][0]["geo"] == "Delhi"
     assert p["movers"]["rows"] == [] and "have 1" in p["movers"]["reason"]
 
 
 def test_days_without_snapshot_reach_the_frontend_as_gaps(processed: Path) -> None:
     p = build_payload(date(2026, 10, 1), processed)
-    assert [s["index"] for s in p["series"]] == [100.0, None, None]
-    assert [s["status"] for s in p["series"]][1:] == ["NO SNAPSHOT", "NO SNAPSHOT"]
+    for t in p["thalis"].values():
+        assert [s["index"] for s in t["series"]] == [100.0, None, None]
+        assert [s["status"] for s in t["series"]][1:] == ["NO SNAPSHOT", "NO SNAPSHOT"]
+        assert t["history"] == {"ok_days": 1, "calendar_days": 3, "first_date": "2026-09-29"}
     assert all(row["cells"] == [True, False, False] for row in p["coverage"]["rows"])
-    assert p["history"] == {"ok_days": 1, "calendar_days": 3, "first_date": "2026-09-29"}
 
 
 def test_empty_processed_dir_gives_not_ready(tmp_path: Path) -> None:

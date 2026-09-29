@@ -218,3 +218,30 @@ external asset is Google Fonts (Fraunces, Inter). The frontend renders only the 
 **D32. Dates are formatted from local date parts.** An early build labelled the 29 Sep point
 "28 Sep", because `toISOString()` shifts local midnight (IST) back to the previous UTC day. It
 was caught in visual QA and fixed before shipping.
+
+## Non-veg thali — 2026-09-29
+
+**D33. Egg and milk units verified from a DoCA primary document, and the non-veg thali is
+enabled. This supersedes D20 and the caveat in D21.** DoCA's own site hosts its answer to Lok
+Sabha Unstarred Q. 4366 (26.03.2025): `fcainfoweb.nic.in/PMS/writereaddata/2025_LS_B_4366.pdf`,
+sha256 `26fa9b5a…111e`, stored in `docs/evidence/`. It states the all-India average retail price
+of egg as "Rs.75.96 per dozen" and of milk as "Rs.58.34 per litre" (21.03.2025). So:
+- `egg` is `per_dozen`, CONFIRMED.
+- `milk` is `per_litre`, now verified rather than assumed.
+
+The live values fit these units in magnitude: Eggs ₹83.81 and Milk ₹61.31 on 29.09.2026.
+Search-engine summaries gave conflicting units, one saying "per kilogram", so only the primary
+PDF was trusted, and it was read in full.
+
+On 2026-09-29 the non-veg thali is ₹32.297533 (index 100): 2 eggs × ₹83.81/12 = ₹13.968333,
+43 % of the thali. It costs 1.45× the veg thali. The engine's EXCLUDED path is still tested, by
+flipping the mapping to VERIFY.
+
+**D34. Two-series colours were validated with a Python port of the dataviz validator** (Node
+isn't installed):
+- Light mode: veg `#d97706` and non-veg `#2a78d6`. CVD ΔE is 27.0 and normal ΔE 32.9, and both
+  meet ≥3:1 contrast.
+- Dark mode: veg `#d97706` and non-veg `#3987e5`. `#f59e0b` failed the dark lightness band
+  (L 0.769 > 0.67), so the darker saffron is used.
+
+Charts label both series directly, so identity never relies on colour alone.

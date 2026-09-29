@@ -2,15 +2,21 @@
 
 **Live dashboard:** [https://thali-flation-index-camgsz4cceqnctimtusgw8.streamlit.app/](https://thali-flation-index-camgsz4cceqnctimtusgw8.streamlit.app/) · data refreshed daily at 19:00 IST by GitHub Actions
 
-[![Thali-flation Index dashboard: a home-cooked veg thali cost ₹22.30 on 29 Sep 2026 (index 100)](docs/images/hero-dark.png)](https://thali-flation-index-camgsz4cceqnctimtusgw8.streamlit.app/)
+| 🥗 Veg thali: **₹22.30** | 🥚 Non-veg thali: **₹32.30** |
+|---|---|
+| [![Veg thali view: ₹22.30 on 29 Sep 2026, index 100](docs/images/hero-dark.png)](https://thali-flation-index-camgsz4cceqnctimtusgw8.streamlit.app/) | [![Non-veg thali view: ₹32.30 on 29 Sep 2026, index 100; 2 eggs are 43% of the cost](docs/images/hero-nonveg-dark.png)](https://thali-flation-index-camgsz4cceqnctimtusgw8.streamlit.app/?thali=nonveg) |
+
+On 29 Sep 2026 (All-India average) the non-veg thali cost **1.45×** the veg one. Two eggs alone
+are 43 % of it. Open the non-veg view directly with
+[`?thali=nonveg`](https://thali-flation-index-camgsz4cceqnctimtusgw8.streamlit.app/?thali=nonveg).
 
 <details>
 <summary><b>📸 Full dashboard screenshots (dark &amp; light)</b></summary>
 <br>
 
-| Dark | Light |
+| Dark (veg selected) | Light (non-veg selected) |
 |---|---|
-| ![Full dashboard in dark mode: KPI tiles, trend, ingredient breakdown, coverage and gaps, method](docs/images/full-dark.jpg) | ![Full dashboard in light mode](docs/images/full-light.jpg) |
+| ![Full dashboard in dark mode: KPI tiles, trend with both thalis, ingredient breakdown, coverage and gaps, method](docs/images/full-dark.jpg) | ![Full dashboard in light mode with the non-veg thali selected](docs/images/full-light.jpg) |
 
 </details>
 
@@ -81,8 +87,8 @@ tests/             guardrails + tests on real captured fixtures
   - [x] Source #2: DoCA homepage daily snapshot (`scripts/snapshot_doca.py`), first real day 2026-09-29
   - [ ] Source #1: mandi API schema + one-day pull, **blocked on `DATA_GOV_API_KEY`**
 - [x] **M2** Coverage report (`data/processed/reports/coverage.md`); source #3 backfill blocked on key
-- [x] **M3** Typed configs, commodity strings matched to the live page, conversion tests on real rows
-- [x] **M4** Missing-aware index engine + data-quality panel (veg thali All India = ₹22.30 = 100 on 2026-09-29)
+- [x] **M3** Typed configs, commodity strings matched to the live page, conversion tests on real rows; egg (per dozen) and milk (per litre) units verified from DoCA's own Lok Sabha answer (`docs/evidence/`)
+- [x] **M4** Missing-aware index engine + data-quality panel (All India on 2026-09-29: veg ₹22.30 = 100, non-veg ₹32.30 = 100)
 - [ ] **M5** Analysis: movers are implemented; volatility, anomalies and CPI lead/lag need weeks of real history (and a CPI source, pending approval)
 - [x] **M6** Dashboard: custom frontend (`app/frontend/`, mounted with `st.components.v2`) with a thali-plate visual, gap-aware trend, ingredient breakdown, coverage grid and always-visible gaps panel, plus native data tables. Menu-price layer: **no source chosen yet**
 - [x] **M7** Deployed on Streamlit Community Cloud ([live](https://thali-flation-index-camgsz4cceqnctimtusgw8.streamlit.app/)); daily GitHub Actions snapshot commits real data (first run green on 2026-09-29)

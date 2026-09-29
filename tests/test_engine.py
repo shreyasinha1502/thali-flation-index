@@ -38,8 +38,25 @@ def test_veg_thali_cost_and_base_index(prices: pd.DataFrame) -> None:
     assert veg["index"] == pytest.approx(100.0)
 
 
-def test_nonveg_is_excluded_because_egg_is_unverified(prices: pd.DataFrame) -> None:
+def test_nonveg_thali_cost_with_confirmed_egg_unit(prices: pd.DataFrame) -> None:
+    # Egg unit per dozen, confirmed in docs/evidence/2025_LS_B_4366.pdf. Hand check from the
+    # prices published 29/09/2026: rice 80g*46.64 + atta 60g*37.65 + tur 20g*125.95 (per kg)
+    # + 2 eggs*83.81/12 + onion 60g*53.97 + tomato 60g*40.11 + oil 20g*203.14 + salt 5g*22.48
+    expected = (
+        80 * 46.64 + 60 * 37.65 + 20 * 125.95 + 60 * 53.97 + 60 * 40.11 + 20 * 203.14 + 5 * 22.48
+    ) / 1000 + 2 * 83.81 / 12
     nonveg = _run(prices).loc["nonveg_thali"]
+    assert nonveg["status"] == OK
+    assert nonveg["cost"] == pytest.approx(expected, rel=1e-12)
+    assert nonveg["cost"] == pytest.approx(32.297533, abs=1e-6)
+    assert nonveg["index"] == pytest.approx(100.0)
+
+
+def test_a_verify_mapping_excludes_its_thali(prices: pd.DataFrame) -> None:
+    cmap = load_commodity_map()
+    cmap["egg"] = cmap["egg"].model_copy(update={"source_status": "VERIFY"})
+    costs, _ = compute_costs(prices, load_baskets(), cmap)
+    nonveg = compute_index(costs, BASE, 100).set_index("thali").loc["nonveg_thali"]
     assert nonveg["status"] == EXCLUDED and pd.isna(nonveg["cost"]) and pd.isna(nonveg["index"])
     assert "egg" in nonveg["excluded_reason"]
 
@@ -53,7 +70,9 @@ def test_one_missing_ingredient_makes_the_whole_thali_missing(prices: pd.DataFra
 
 def test_components_carry_provenance(prices: pd.DataFrame) -> None:
     _, comps = compute_costs(prices, load_baskets(), load_commodity_map())
-    assert len(comps) == 10 and comps["cost"].sum() == pytest.approx(22.29725, abs=1e-9)
+    veg = comps[comps["thali"] == "veg_thali"]
+    assert len(veg) == 10 and veg["cost"].sum() == pytest.approx(22.29725, abs=1e-9)
+    assert len(comps[comps["thali"] == "nonveg_thali"]) == 8
     assert comps["raw_path"].str.endswith("home_2026-09-29.html").all()
     assert comps["raw_sha256"].nunique() == 1
 
@@ -70,5 +89,5 @@ def test_dq_panel_reports_configured_city_without_source(prices: pd.DataFrame) -
     costs, _ = compute_costs(prices, load_baskets(), load_commodity_map())
     dq = dq_panel(costs, ["Delhi"]).set_index(["geo", "thali"])
     assert dq.loc[("All India", "veg_thali"), "n_ok"] == 1
-    assert dq.loc[("All India", "nonveg_thali"), "n_excluded"] == 1
+    assert dq.loc[("All India", "nonveg_thali"), "n_ok"] == 1
     assert dq.loc[("Delhi", "*"), "n_dates"] == 0

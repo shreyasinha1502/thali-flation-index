@@ -33,9 +33,11 @@ download them by hand, and an importer for such exports could be added.
   "Additional Commodities" group: Black Pepper ₹88.65, Turmeric powder ₹16.74 and Butter
   ₹60.58 on 2026-09-29 are only plausible per 100 g. So `unit_stated` is stored verbatim,
   and units are trusted only where `config/commodity_map.yaml` asserts them.
-- `Milk @` carries an "@" marker whose footnote is not on the page. DoCA's Price Monitoring
-  Division page on consumeraffairs.gov.in lists the 38 commodities but gives no units.
-- `Eggs` is published (₹83.81 on 2026-09-29) with **no verifiable unit** (dozen? kg?).
+- `Milk @` carries an "@" marker whose footnote is not on the page, and `Eggs` (₹83.81 on
+  2026-09-29) has no unit on the page. **Both units are verified from DoCA's own document**:
+  Lok Sabha Unstarred Q. 4366 (26.03.2025), hosted at
+  `fcainfoweb.nic.in/PMS/writereaddata/2025_LS_B_4366.pdf`, reports the all-India average retail
+  price of egg "per dozen" and of milk "per litre". It is stored byte-exact in `docs/evidence/`.
 
 This source is ingested now.
 

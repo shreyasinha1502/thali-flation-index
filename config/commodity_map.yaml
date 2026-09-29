@@ -11,11 +11,12 @@
 # publishes (retail table, as on 29/09/2026; fixture tests/fixtures/doca_home/). Changed:
 #   "Mustard Oil" -> "Mustard Oil (Packed)"   "Salt" -> "Salt Pack (Iodised)"
 #   "Milk"        -> "Milk @"                 "Egg"  -> "Eggs"
-# Units: the page header says "₹/Kg" for all retail rows. Milk carries an "@" marker whose
-# footnote is not on the page; per_litre is kept as this config's stated assumption.
-# Egg: "Eggs" IS published, but its unit (dozen vs kg) is NOT stated anywhere verifiable, and the
-# ₹/Kg header is demonstrably wrong for other "Additional Commodities" -> stays VERIFY -> the
-# non-veg thali is EXCLUDED from the index until the unit is confirmed. See docs/sources.md.
+# Units: the page header says "₹/Kg" for all retail rows, which is wrong for some rows.
+# Egg + milk units VERIFIED 2026-09-29 from DoCA's own Lok Sabha answer (Unstarred Q. 4366,
+# 26.03.2025, hosted at fcainfoweb.nic.in/PMS/writereaddata/2025_LS_B_4366.pdf, stored in
+# docs/evidence/ with sha256): "all-India average retail prices of egg at Rs.75.96 per dozen"
+# and milk "Rs.58.34 per litre". So egg = per_dozen and milk = per_litre, both CONFIRMED.
+# This enables the non-veg thali.
 
 rice:        { source_commodity: "Rice",                source_unit: per_kg,    price_factor: 0.001,   source_status: CONFIRMED, preferred_source: DoCA_retail }
 atta:        { source_commodity: "Atta (Wheat)",        source_unit: per_kg,    price_factor: 0.001,   source_status: CONFIRMED, preferred_source: DoCA_retail }
@@ -27,4 +28,4 @@ cooking_oil: { source_commodity: "Mustard Oil (Packed)",source_unit: per_kg,    
 salt:        { source_commodity: "Salt Pack (Iodised)", source_unit: per_kg,    price_factor: 0.001,   source_status: CONFIRMED, preferred_source: DoCA_retail }
 sugar:       { source_commodity: "Sugar",               source_unit: per_kg,    price_factor: 0.001,   source_status: CONFIRMED, preferred_source: DoCA_retail }
 milk:        { source_commodity: "Milk @",              source_unit: per_litre, price_factor: 0.001,   source_status: CONFIRMED, preferred_source: DoCA_retail }
-egg:         { source_commodity: "Eggs",                source_unit: per_dozen, price_factor: 0.08333, source_status: VERIFY,    preferred_source: "NECC or verify DoCA-38 set" }
+egg:         { source_commodity: "Eggs",                source_unit: per_dozen, price_factor: 0.08333, source_status: CONFIRMED, preferred_source: DoCA_retail }

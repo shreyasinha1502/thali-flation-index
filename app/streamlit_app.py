@@ -47,7 +47,11 @@ def payload(as_of_iso: str) -> dict:
 
 
 today_ist = datetime.now(UTC).astimezone(IST).date()
-dashboard(data=payload(today_ist.isoformat()), key="dash")
+# ?thali=nonveg (or veg) preselects a thali, so links can be shared.
+initial = {"veg": "veg_thali", "nonveg": "nonveg_thali"}.get(
+    str(st.query_params.get("thali", "veg")).lower(), "veg_thali"
+)
+dashboard(data={**payload(today_ist.isoformat()), "initial": initial}, key="dash")
 
 with st.expander("📋 Data tables (same data as above, for screen readers and download)"):
     for title, rel in [

@@ -1,3 +1,3 @@
 as_on_date,geo,thali,status,cost,n_items,n_priced,missing_items,excluded_reason,base_date,base_cost,index,index_note
 2026-09-29,All India,veg_thali,OK,22.297250000000002,10,10,,,2026-09-29,22.297250000000002,100.0,
-2026-09-29,All India,nonveg_thali,EXCLUDED,,8,0,,unverified mapping: egg,2026-09-29,,,no complete basket on base date 2026-09-29
+2026-09-29,All India,nonveg_thali,OK,32.297533333333334,8,8,,,2026-09-29,32.297533333333334,100.0,

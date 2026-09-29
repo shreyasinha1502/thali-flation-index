@@ -18,6 +18,7 @@ from thaliflation.settings import PROCESSED_DIR
 
 REPO_URL = "https://github.com/shreyasinha1502/thali-flation-index"
 SOURCE_URL = "https://fcainfoweb.nic.in/"
+EVIDENCE_URL = f"{REPO_URL}/blob/main/docs/evidence/README.md"
 
 # Presentation labels only (the data keeps the exact DoCA strings in `source_commodity`).
 LABELS: dict[str, tuple[str, str]] = {
@@ -31,6 +32,19 @@ LABELS: dict[str, tuple[str, str]] = {
     "salt": ("Salt", "🧂"),
     "sugar": ("Sugar", "🍬"),
     "milk": ("Milk / curd", "🥛"),
+    "egg": ("Eggs", "🥚"),
+}
+THALIS: dict[str, dict[str, str]] = {
+    "veg_thali": {
+        "label": "Veg thali",
+        "emoji": "🥗",
+        "blurb": "rice, 2 rotis, dal, aloo sabzi, tadka, a little milk",
+    },
+    "nonveg_thali": {
+        "label": "Non-veg thali",
+        "emoji": "🥚",
+        "blurb": "rice, 2 rotis, a smaller dal, 2-egg curry, tadka",
+    },
 }
 
 
@@ -47,67 +61,51 @@ def _csv(root: Path, rel: str) -> pd.DataFrame:
     return pd.read_csv(p) if p.is_file() else pd.DataFrame()
 
 
-def build_payload(as_of: date, root: Path = PROCESSED_DIR) -> dict[str, Any]:
-    idx = _csv(root, "index/thali_index.csv")
-    comps = _csv(root, "index/components.csv")
-    prices = load_doca_prices(root)
-    out: dict[str, Any] = {
-        "as_of": as_of.isoformat(),
-        "repo_url": REPO_URL,
-        "source_url": SOURCE_URL,
-        "ready": not idx.empty,
-    }
-    if idx.empty:
-        return out
-
-    idx["as_on_date"] = pd.to_datetime(idx["as_on_date"]).dt.date
-    veg = idx[(idx["thali"] == "veg_thali") & (idx["geo"] == "All India")].sort_values("as_on_date")
-    ok = veg[veg["status"] == "OK"]
-    base = veg["base_date"].dropna()
-    cal = daily_calendar(veg, as_of=max(as_of, veg["as_on_date"].max()))
-    out["base_date"] = str(base.iloc[0]) if not base.empty else None
-    out["series"] = [
-        {
-            "date": r.as_on_date.isoformat(),
-            "index": _num(r.index),
-            "cost": _num(r.cost),
-            "status": r.status,
-        }
-        for r in cal.itertuples()
-    ]
-    out["history"] = {
-        "ok_days": len(ok),
-        "calendar_days": len(cal),
-        "first_date": cal["as_on_date"].min().isoformat(),
+def _point(row: pd.Series) -> dict[str, Any]:
+    return {
+        "date": row["as_on_date"].isoformat(),
+        "cost": _num(row["cost"]),
+        "index": _num(row["index"]),
     }
 
-    latest = prev = None
-    if not ok.empty:
-        last = ok.iloc[-1]
-        latest = {
-            "date": last["as_on_date"].isoformat(),
-            "cost": _num(last["cost"]),
-            "index": _num(last["index"]),
-        }
-        if len(ok) > 1:
-            p = ok.iloc[-2]
-            prev = {
-                "date": p["as_on_date"].isoformat(),
-                "cost": _num(p["cost"]),
-                "index": _num(p["index"]),
+
+def _thali_block(key: str, rows: pd.DataFrame, comps: pd.DataFrame, as_of: date) -> dict[str, Any]:
+    rows = rows.sort_values("as_on_date")
+    ok = rows[rows["status"] == "OK"]
+    cal = daily_calendar(rows, as_of=max(as_of, rows["as_on_date"].max()))
+    last = rows.iloc[-1]
+    block: dict[str, Any] = {
+        "key": key,
+        **THALIS.get(key, {"label": key, "emoji": "🍽️", "blurb": ""}),
+        "status": last["status"],
+        "reason": str(last["excluded_reason"] or last["missing_items"] or ""),
+        "n_items": int(last["n_items"]),
+        "latest": _point(ok.iloc[-1]) if not ok.empty else None,
+        "previous": _point(ok.iloc[-2]) if len(ok) > 1 else None,
+        "series": [
+            {
+                "date": r.as_on_date.isoformat(),
+                "index": _num(r.index),
+                "cost": _num(r.cost),
+                "status": r.status,
             }
-    out["latest"], out["previous"] = latest, prev
-
-    items: list[dict[str, Any]] = []
-    if latest and not comps.empty:
-        comps["as_on_date"] = pd.to_datetime(comps["as_on_date"]).dt.date
+            for r in cal.itertuples()
+        ],
+        "history": {
+            "ok_days": len(ok),
+            "calendar_days": len(cal),
+            "first_date": cal["as_on_date"].min().isoformat(),
+        },
+        "items": [],
+    }
+    if block["latest"] and not comps.empty:
         day = comps[
-            (comps["thali"] == "veg_thali") & (comps["as_on_date"].astype(str) == latest["date"])
+            (comps["thali"] == key) & (comps["as_on_date"].astype(str) == block["latest"]["date"])
         ]
         total = float(day["cost"].sum())
         for r in day.sort_values("cost", ascending=False).itertuples():
             label, emoji = LABELS.get(r.ingredient, (r.ingredient, "•"))
-            items.append(
+            block["items"].append(
                 {
                     "ingredient": r.ingredient,
                     "label": label,
@@ -119,21 +117,37 @@ def build_payload(as_of: date, root: Path = PROCESSED_DIR) -> dict[str, Any]:
                     "source_unit": r.source_unit,
                     "cost": _num(r.cost),
                     "share": _num(r.cost) / total if total else None,
-                    "raw_sha256": r.raw_sha256,
-                    "raw_path": r.raw_path,
                 }
             )
-    out["items"] = items
+    return block
 
-    nonveg = idx[idx["thali"] == "nonveg_thali"].sort_values("as_on_date")
-    out["nonveg"] = (
-        None
-        if nonveg.empty
-        else {
-            "status": nonveg.iloc[-1]["status"],
-            "reason": str(nonveg.iloc[-1]["excluded_reason"] or nonveg.iloc[-1]["missing_items"]),
-        }
-    )
+
+def build_payload(as_of: date, root: Path = PROCESSED_DIR) -> dict[str, Any]:
+    idx = _csv(root, "index/thali_index.csv")
+    comps = _csv(root, "index/components.csv")
+    prices = load_doca_prices(root)
+    out: dict[str, Any] = {
+        "as_of": as_of.isoformat(),
+        "repo_url": REPO_URL,
+        "source_url": SOURCE_URL,
+        "evidence_url": EVIDENCE_URL,
+        "ready": not idx.empty,
+    }
+    if idx.empty:
+        return out
+
+    idx["as_on_date"] = pd.to_datetime(idx["as_on_date"]).dt.date
+    if not comps.empty:
+        comps["as_on_date"] = pd.to_datetime(comps["as_on_date"]).dt.date
+    all_india = idx[idx["geo"] == "All India"]
+    base = all_india["base_date"].dropna()
+    out["base_date"] = str(base.iloc[0]) if not base.empty else None
+    order = [k for k in THALIS if k in set(all_india["thali"])]
+    order += sorted(set(all_india["thali"]) - set(order))
+    out["order"] = order
+    out["thalis"] = {
+        k: _thali_block(k, all_india[all_india["thali"] == k], comps, as_of) for k in order
+    }
 
     movers, why = top_movers(prices) if not prices.empty else (pd.DataFrame(), "No prices yet.")
     out["movers"] = {
@@ -152,23 +166,28 @@ def build_payload(as_of: date, root: Path = PROCESSED_DIR) -> dict[str, Any]:
         ],
     }
 
-    # Coverage grid: basket ingredients x calendar days (retail DoCA series).
-    days = [r["date"] for r in out["series"]]
-    grid = []
+    # Coverage grid: every basket ingredient (union over thalis) x calendar days.
+    days = [s["date"] for s in out["thalis"][order[0]]["series"]] if order else []
+    grid: list[dict[str, Any]] = []
     if not prices.empty:
         retail = prices[prices["price_type"] == "retail"]
         have = {
             (c, d.isoformat())
             for c, d in zip(retail["commodity"], retail["as_on_date"], strict=True)
         }
-        for it in items or []:
-            grid.append(
-                {
-                    "label": it["label"],
-                    "emoji": it["emoji"],
-                    "cells": [(it["source_commodity"], d) in have for d in days],
-                }
-            )
+        seen: set[str] = set()
+        for k in order:
+            for it in out["thalis"][k]["items"]:
+                if it["ingredient"] in seen:
+                    continue
+                seen.add(it["ingredient"])
+                grid.append(
+                    {
+                        "label": it["label"],
+                        "emoji": it["emoji"],
+                        "cells": [(it["source_commodity"], d) in have for d in days],
+                    }
+                )
     out["coverage"] = {"days": days, "rows": grid}
 
     dq = _csv(root, "index/dq_panel.csv")
@@ -177,12 +196,10 @@ def build_payload(as_of: date, root: Path = PROCESSED_DIR) -> dict[str, Any]:
         if dq.empty
         else [{"geo": r.geo, "note": r.dropped} for r in dq[dq["n_dates"] == 0].itertuples()]
     )
-
     if not prices.empty:
         lastfetch = prices.sort_values("fetched_at").iloc[-1]
         out["provenance"] = {
             "fetched_at": str(lastfetch["fetched_at"]),
             "raw_sha256": lastfetch["raw_sha256"],
-            "n_prices": int((prices["as_on_date"] == prices["as_on_date"].max()).sum()),
         }
     return out
