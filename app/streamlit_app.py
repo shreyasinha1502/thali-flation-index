@@ -9,6 +9,8 @@ give a screen-reader / download-friendly view of the same data.
 
 from __future__ import annotations
 
+import hashlib
+import importlib
 import sys
 from datetime import UTC, datetime, timedelta, timezone
 from pathlib import Path
@@ -19,7 +21,38 @@ import streamlit as st
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from thaliflation.dashboard_data import build_payload  # noqa: E402
+import thaliflation.analysis  # noqa: E402
+import thaliflation.coverage  # noqa: E402
+import thaliflation.dashboard_data  # noqa: E402
+import thaliflation.ingest.doca_home  # noqa: E402
+import thaliflation.settings  # noqa: E402
+
+# Streamlit Cloud pulls new commits without restarting the process, and it only reloads
+# modules inside app/. So hash the package source and, whenever this process hasn't yet
+# loaded that exact version (including the first run after a deploy), reload the modules the
+# app uses in dependency order. The hash is also part of the payload cache key, so a stale
+# payload shape can never be served.
+CODE_VERSION = hashlib.sha1(
+    b"".join(p.read_bytes() for p in sorted((ROOT / "src" / "thaliflation").rglob("*.py")))
+).hexdigest()[:12]
+_RELOAD_ORDER = (
+    thaliflation.settings,
+    thaliflation.ingest.doca_home,
+    thaliflation.analysis,
+    thaliflation.coverage,
+    thaliflation.dashboard_data,
+)
+
+
+@st.cache_resource
+def _loaded() -> dict[str, str | None]:
+    return {"version": None}
+
+
+if _loaded()["version"] != CODE_VERSION:
+    for mod in _RELOAD_ORDER:
+        importlib.reload(mod)
+    _loaded()["version"] = CODE_VERSION
 
 FRONTEND = Path(__file__).parent / "frontend"
 PROCESSED = ROOT / "data" / "processed"
@@ -42,8 +75,9 @@ dashboard = st.components.v2.component(
 
 
 @st.cache_data(ttl=900)
-def payload(as_of_iso: str) -> dict:
-    return build_payload(datetime.fromisoformat(as_of_iso).date(), PROCESSED)
+def payload(as_of_iso: str, code_version: str) -> dict:
+    as_of = datetime.fromisoformat(as_of_iso).date()
+    return thaliflation.dashboard_data.build_payload(as_of, PROCESSED)
 
 
 today_ist = datetime.now(UTC).astimezone(IST).date()
@@ -51,7 +85,7 @@ today_ist = datetime.now(UTC).astimezone(IST).date()
 initial = {"veg": "veg_thali", "nonveg": "nonveg_thali"}.get(
     str(st.query_params.get("thali", "veg")).lower(), "veg_thali"
 )
-dashboard(data={**payload(today_ist.isoformat()), "initial": initial}, key="dash")
+dashboard(data={**payload(today_ist.isoformat(), CODE_VERSION), "initial": initial}, key="dash")
 
 with st.expander("📋 Data tables (same data as above, for screen readers and download)"):
     for title, rel in [

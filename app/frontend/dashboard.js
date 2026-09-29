@@ -17,7 +17,8 @@ const cap = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
 
 function countUp(el, to, fmt, ms = 1100) {
   if (to == null) { el.textContent = "—"; return; }
-  if (reduceMotion()) { el.textContent = fmt(to); return; }
+  // Hidden tabs pause requestAnimationFrame; show the final value instead of a stuck "—".
+  if (reduceMotion() || document.hidden) { el.textContent = fmt(to); el._last = to; return; }
   const from = el._last ?? 0, t0 = performance.now();
   el._last = to;
   const step = (t) => {
@@ -162,8 +163,12 @@ export default function (component) {
   root.className = "tf-root";
   parentElement.appendChild(root);
 
-  if (!data || !data.ready || !data.order || !data.order.length) {
+  if (!data || !data.ready) {
     root.innerHTML = `<div class="empty"><div class="icon">⏳</div>No index has been built yet. The daily pipeline hasn't produced data.</div>`;
+    return;
+  }
+  if (!data.thalis || !data.order || !data.order.length) {
+    root.innerHTML = `<div class="empty"><div class="icon">🔄</div>The dashboard is updating to a new version. Please refresh in a minute.</div>`;
     return;
   }
 
