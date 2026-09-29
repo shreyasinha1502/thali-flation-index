@@ -1,0 +1,11 @@
+as_on_date,geo,thali,ingredient,source_commodity,qty,unit,price,source_unit,cost,source,raw_path,raw_sha256
+2026-09-29,All India,veg_thali,rice,Rice,80.0,g,46.64,per_kg,3.7312,doca_home,data/raw/doca_home/2026-09-29/20260929T160115936929Z/home.html,292bbffc3b3f0328b5a045716e4672d06ed78d9118009e29d2e87e102b53a059
+2026-09-29,All India,veg_thali,atta,Atta (Wheat),60.0,g,37.65,per_kg,2.259,doca_home,data/raw/doca_home/2026-09-29/20260929T160115936929Z/home.html,292bbffc3b3f0328b5a045716e4672d06ed78d9118009e29d2e87e102b53a059
+2026-09-29,All India,veg_thali,tur_dal,Tur/Arhar Dal,30.0,g,125.95,per_kg,3.7785,doca_home,data/raw/doca_home/2026-09-29/20260929T160115936929Z/home.html,292bbffc3b3f0328b5a045716e4672d06ed78d9118009e29d2e87e102b53a059
+2026-09-29,All India,veg_thali,potato,Potato,100.0,g,22.6,per_kg,2.2600000000000002,doca_home,data/raw/doca_home/2026-09-29/20260929T160115936929Z/home.html,292bbffc3b3f0328b5a045716e4672d06ed78d9118009e29d2e87e102b53a059
+2026-09-29,All India,veg_thali,onion,Onion,40.0,g,53.97,per_kg,2.1588000000000003,doca_home,data/raw/doca_home/2026-09-29/20260929T160115936929Z/home.html,292bbffc3b3f0328b5a045716e4672d06ed78d9118009e29d2e87e102b53a059
+2026-09-29,All India,veg_thali,tomato,Tomato,40.0,g,40.11,per_kg,1.6044,doca_home,data/raw/doca_home/2026-09-29/20260929T160115936929Z/home.html,292bbffc3b3f0328b5a045716e4672d06ed78d9118009e29d2e87e102b53a059
+2026-09-29,All India,veg_thali,cooking_oil,Mustard Oil (Packed),15.0,g,203.14,per_kg,3.0471,doca_home,data/raw/doca_home/2026-09-29/20260929T160115936929Z/home.html,292bbffc3b3f0328b5a045716e4672d06ed78d9118009e29d2e87e102b53a059
+2026-09-29,All India,veg_thali,salt,Salt Pack (Iodised),5.0,g,22.48,per_kg,0.11240000000000001,doca_home,data/raw/doca_home/2026-09-29/20260929T160115936929Z/home.html,292bbffc3b3f0328b5a045716e4672d06ed78d9118009e29d2e87e102b53a059
+2026-09-29,All India,veg_thali,sugar,Sugar,5.0,g,56.07,per_kg,0.28035000000000004,doca_home,data/raw/doca_home/2026-09-29/20260929T160115936929Z/home.html,292bbffc3b3f0328b5a045716e4672d06ed78d9118009e29d2e87e102b53a059
+2026-09-29,All India,veg_thali,milk,Milk @,50.0,ml,61.31,per_litre,3.0655,doca_home,data/raw/doca_home/2026-09-29/20260929T160115936929Z/home.html,292bbffc3b3f0328b5a045716e4672d06ed78d9118009e29d2e87e102b53a059

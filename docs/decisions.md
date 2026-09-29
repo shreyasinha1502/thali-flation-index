@@ -141,3 +141,25 @@ non-veg thali will be computed once a source confirms the unit.
 with "@", and the footnote isn't on the page. `per_litre` is what the config asserts and
 fits an exception marker on a "₹/Kg" table. Impact if wrong: 50 ml at ₹61.31/L is ₹3.07,
 versus ₹3.16 treating it as ₹/kg at about 1.03 g/ml, about 0.4 % of the veg thali.
+
+## M4: index engine — 2026-09-29
+
+**D22. `base_date` is 2026-09-29.** It's the first (and only) real date with a complete veg
+basket in the M2 coverage report: DoCA's All-India average, 10/10 ingredients published. On
+that date the veg thali costs ₹22.29725 and indexes to 100.
+
+**D23. "All India" is DoCA's published average, not our mean over cities.** The spec's
+all-India figure is a mean over cities with complete baskets. No city-level series exists yet:
+DoCA centre reports are behind a CAPTCHA and the mandi API needs the key. The engine
+therefore uses DoCA's own All-India average as the geo "All India" and labels it that way. The
+city aggregator will be written once a real city series exists to test it against. Configured
+cities without a source (Delhi) show up in the data-quality panel as "no live source".
+
+**D24. Status semantics.**
+- OK: every ingredient is priced that day.
+- MISSING: any ingredient is absent. Cost and index are NaN, with no partial sum and no
+  substitution.
+- EXCLUDED: the basket uses a non-CONFIRMED mapping.
+
+The index is computed only for OK rows, against the base-date cost of the same geo and thali.
+If that base cost doesn't exist, every index for the series is NaN, with a note saying why.
