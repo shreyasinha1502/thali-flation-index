@@ -9,6 +9,7 @@ Existing files are never overwritten.
 
 from __future__ import annotations
 
+import gzip
 import hashlib
 import json
 from dataclasses import dataclass
@@ -67,13 +68,19 @@ def write_raw(
     public_url: str,
     status: int,
     meta: dict[str, Any],
+    compress: bool = False,
 ) -> RawArtifact:
-    body_path = run_dir / f"{name}.{ext_for(content_type)}"
+    """Cache `body` exactly. With compress=True it is stored gzip'd (lossless; sha256 and
+    n_bytes always describe the *uncompressed* bytes as received). Used for sources whose raw
+    responses are committed to git (M7) so provenance survives ephemeral CI filesystems."""
+    suffix = ".gz" if compress else ""
+    body_path = run_dir / f"{name}.{ext_for(content_type)}{suffix}"
     meta_path = run_dir / f"{name}.meta.json"
     sha256 = hashlib.sha256(body).hexdigest()
-    _write_new(body_path, body)
+    _write_new(body_path, gzip.compress(body, mtime=0) if compress else body)
     full_meta = {
         "body_file": body_path.name,
+        "stored_encoding": "gzip" if compress else "identity",
         "sha256": sha256,
         "n_bytes": len(body),
         "fetched_at": fetched_at.isoformat(),
@@ -84,6 +91,18 @@ def write_raw(
     }
     _write_new(meta_path, json.dumps(full_meta, indent=2, ensure_ascii=False).encode("utf-8"))
     return RawArtifact(body_path, meta_path, sha256, len(body), fetched_at, public_url, status)
+
+
+def read_raw(body_path: Path) -> bytes:
+    """Return the original bytes of a cached body and verify them against its meta sha256."""
+    data = body_path.read_bytes()
+    if body_path.suffix == ".gz":
+        data = gzip.decompress(data)
+    stem = body_path.name.split(".")[0]
+    meta = json.loads((body_path.parent / f"{stem}.meta.json").read_text(encoding="utf-8"))
+    if hashlib.sha256(data).hexdigest() != meta["sha256"]:
+        raise ValueError(f"raw body {body_path} does not match its recorded sha256")
+    return data
 
 
 def write_failure(run_dir: Path, name: str, *, public_url: str, meta: dict[str, Any]) -> Path:

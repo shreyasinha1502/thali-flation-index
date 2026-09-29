@@ -30,7 +30,14 @@ def main() -> int:
     setup_logging(log_file=LOG_DIR / "snapshot_doca.jsonl")
     run_dir = new_run_dir(DOCA_HOME_SOURCE)
     try:
-        result = fetch(DOCA_HOME_URL, {}, source=DOCA_HOME_SOURCE, run_dir=run_dir, name="home")
+        result = fetch(
+            DOCA_HOME_URL,
+            {},
+            source=DOCA_HOME_SOURCE,
+            run_dir=run_dir,
+            name="home",
+            compress_raw=True,  # raw HTML is committed by the daily workflow (M7)
+        )
         rows, skipped = parse_home(result.body.decode("utf-8"), artifact=result.artifact)
     except (FetchError, DocaParseError) as exc:
         log.error("doca_snapshot_failed", extra={"error": str(exc)})

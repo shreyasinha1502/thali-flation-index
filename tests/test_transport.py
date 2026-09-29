@@ -189,3 +189,38 @@ def test_raw_cache_is_append_only(run_dir: Path) -> None:
     write_raw(run_dir, "same", body, **kw)  # type: ignore[arg-type]
     with pytest.raises(FileExistsError):
         write_raw(run_dir, "same", body, **kw)  # type: ignore[arg-type]
+
+
+def test_compressed_raw_is_lossless_and_verified(run_dir: Path) -> None:
+    from thaliflation.ingest.raw_cache import read_raw, utc_now
+
+    live = (Path(__file__).parent / "fixtures" / "doca_home" / "home_2026-09-29.html").read_bytes()
+    art = write_raw(
+        run_dir,
+        "home",
+        live,
+        content_type="text/html",
+        fetched_at=utc_now(),
+        public_url="https://fcainfoweb.nic.in/",
+        status=200,
+        meta={},
+        compress=True,
+    )
+    assert art.body_path.name == "home.html.gz"
+    assert art.body_path.stat().st_size < len(live) / 3  # actually compressed
+    assert read_raw(art.body_path) == live  # byte-exact round trip, sha256 verified
+    assert art.sha256 == hashlib.sha256(live).hexdigest()
+
+
+def test_session_cookies_are_not_stored_in_cache_meta() -> None:
+    from thaliflation.ingest.transport import safe_headers
+
+    # Header *names* as DoCA's server sends them; the values are placeholders, not tokens.
+    out = safe_headers(
+        {
+            "Set-Cookie": "ASP.NET_SessionId=placeholder; path=/",
+            "Content-Type": "text/html; charset=utf-8",
+        }
+    )
+    assert out["Set-Cookie"] == "***redacted***"
+    assert out["Content-Type"] == "text/html; charset=utf-8"

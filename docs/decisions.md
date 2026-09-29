@@ -163,3 +163,35 @@ cities without a source (Delhi) show up in the data-quality panel as "no live so
 
 The index is computed only for OK rows, against the base-date cost of the same geo and thali.
 If that base cost doesn't exist, every index for the series is NaN, with a note saying why.
+
+## M5–M7 — 2026-09-29
+
+**D25. M5 is deliberately thin.** There is one real day of history. Top movers is
+implemented; it compares the two latest published dates and reports the real gap between
+them, and it refuses to run with fewer than two dates. Volatility, anomaly flags, the veg vs
+non-veg divergence and a CPI lead/lag test all need weeks of real data, and CPI also needs a
+data source (such as MoSPI) that isn't on the approved list yet. Writing them now would mean
+code that can't be checked against real data.
+
+**D26. The prospective menu-price layer isn't built.** The spec names no menu source.
+Scraping delivery apps raises terms-of-service problems and would be a new data source, so it
+needs the user's choice and approval first.
+
+**D27. Raw HTML for DoCA is committed, gzip'd.** Stored rows point at their raw file through
+`raw_path`. On an ephemeral CI filesystem that pointer would dangle unless the raw file is
+committed. gzip is lossless: sha256 and n_bytes describe the uncompressed body, and
+`read_raw()` verifies them. The size is about 20 KB a day. The first five captures, from
+before compression existed, stay uncompressed, since the raw cache is append-only.
+
+**D28. Session cookies are never stored.** DoCA's responses set `ASP.NET_SessionId` and
+`BNI_persistence` cookies, which are anonymous session tokens. The transport now redacts
+`Set-Cookie`, `Cookie` and `Authorization` header values in cache metadata. The six
+already-written meta files were redacted in place, with a note added to each; the response
+bodies are untouched. Commit b706812 (local only, never pushed) still contains one expired
+anonymous DoCA session id. History wasn't rewritten for that, because the token carries no
+login, expires within minutes and belongs to a public page.
+
+**D29. The daily workflow commits even when the snapshot fails.** The raw failure record and
+the refreshed coverage report are evidence of the gap. The run is then marked red, so a gap is
+recorded and visible, never silent. The GitHub runners may be outside India; see the README's
+known-risk note.

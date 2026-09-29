@@ -42,6 +42,8 @@ RETRYABLE_EXC = (
     requests.exceptions.ChunkedEncodingError,
 )
 DEFAULT_SECRET_PARAMS = frozenset({"api-key"})
+# Response headers that can carry session tokens; their values are never stored.
+SENSITIVE_HEADERS = frozenset({"set-cookie", "cookie", "authorization"})
 _SNIPPET = 200
 
 
@@ -69,6 +71,13 @@ class FetchError(RuntimeError):
     def __init__(self, message: str, *, artifact: RawArtifact | None = None):
         super().__init__(message)
         self.artifact = artifact
+
+
+def safe_headers(headers: Mapping[str, str]) -> dict[str, str]:
+    """Response headers for the cache meta, with session tokens (cookies) redacted."""
+    return {
+        k: ("***redacted***" if k.lower() in SENSITIVE_HEADERS else v) for k, v in headers.items()
+    }
 
 
 def public_url(url: str, params: Mapping[str, Any], secret_params: frozenset[str]) -> str:
@@ -100,6 +109,7 @@ def fetch(
     policy: RetryPolicy = RetryPolicy(),  # noqa: B008 - frozen, immutable default
     session: requests.Session | None = None,
     sleep: Callable[[float], None] = time.sleep,
+    compress_raw: bool = False,
 ) -> FetchResult:
     """GET `url` with retries; cache the final response under `run_dir/name.*`."""
     for key in secret_params & params.keys():
@@ -179,11 +189,12 @@ def fetch(
             fetched_at=fetched_at,
             public_url=shown_url,
             status=resp.status_code,
+            compress=compress_raw,
             meta={
                 "source": source,
                 "user_agent": USER_AGENT,
                 "attempts": history,
-                "response_headers": dict(resp.headers),
+                "response_headers": safe_headers(resp.headers),
             },
         )
         if resp.status_code != 200:

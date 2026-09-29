@@ -1,8 +1,8 @@
 {
   "body_file": "home.html",
-  "sha256": "292bbffc3b3f0328b5a045716e4672d06ed78d9118009e29d2e87e102b53a059",
+  "sha256": "405e178baa8811e23257d5503b1aac83d5ab15c6567098aae0b7c00d18d1a630",
   "n_bytes": 103379,
-  "fetched_at": "2026-09-29T16:01:18.673526+00:00",
+  "fetched_at": "2026-09-29T16:01:22.341701+00:00",
   "url": "https://fcainfoweb.nic.in/",
   "status": 200,
   "content_type": "text/html; charset=utf-8",
@@ -12,7 +12,7 @@
     {
       "attempt": 1,
       "status": 200,
-      "at": "2026-09-29T16:01:18.673526+00:00"
+      "at": "2026-09-29T16:01:22.341701+00:00"
     }
   ],
   "response_headers": {
@@ -25,7 +25,7 @@
     "Content-Security-Policy": "default-src 'self'; connect-src *; font-src *; img-src * data:; media-src *; object-src *; script-src * 'unsafe-inline' 'unsafe-eval'; style-src * 'unsafe-inline';",
     "X-XSS-Protection": "1;mode=block",
     "Strict-Transport-Security": "max-age=31536000",
-    "Date": "Tue, 29 Sep 2026 16:01:17 GMT",
+    "Date": "Tue, 29 Sep 2026 16:01:21 GMT",
     "Content-Length": "103379",
     "Set-Cookie": "***redacted***"
   },

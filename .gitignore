@@ -12,9 +12,12 @@ dist/
 .env
 .streamlit/secrets.toml
 
-# Raw API/CSV responses are cached locally for provenance but not committed (size).
+# Raw API/CSV responses are cached locally for provenance. Most are not committed (size),
+# except DoCA homepage snapshots (gzip, ~20 KB/day): the daily workflow commits them so
+# every stored price keeps a verifiable raw_path after CI's ephemeral filesystem is gone.
 data/raw/*
 !data/raw/.gitkeep
+!data/raw/doca_home/
 
 # Run logs
 logs/
