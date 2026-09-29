@@ -264,7 +264,7 @@ def store_rows(rows: list[DocaPriceRow], *, root: Path = PROCESSED_DIR) -> list[
         stamp = batch[0].fetched_at.strftime("%Y%m%dT%H%M%SZ")
         path = out_dir / f"as_on={as_on.isoformat()}__fetched={stamp}.csv"
         with path.open("w", encoding="utf-8", newline="") as fh:
-            writer = csv.DictWriter(fh, fieldnames=FIELDS)
+            writer = csv.DictWriter(fh, fieldnames=FIELDS, lineterminator="\n")
             writer.writeheader()
             for r in batch:
                 writer.writerow(r.model_dump(mode="json"))

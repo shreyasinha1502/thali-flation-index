@@ -103,7 +103,7 @@ def write_coverage_report(
 ) -> Path:
     out_dir.mkdir(parents=True, exist_ok=True)
     cov = series_coverage(prices, as_of)
-    cov.to_csv(out_dir / "coverage_series.csv", index=False)
+    cov.to_csv(out_dir / "coverage_series.csv", index=False, lineterminator="\n")
     lines = [
         f"# Coverage report (as of {as_of.isoformat()})",
         "",
@@ -154,5 +154,5 @@ def write_coverage_report(
                 for r in failed.itertuples()
             ]
     path = out_dir / "coverage.md"
-    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
     return path

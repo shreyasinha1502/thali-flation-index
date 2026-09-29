@@ -195,3 +195,10 @@ login, expires within minutes and belongs to a public page.
 the refreshed coverage report are evidence of the gap. The run is then marked red, so a gap is
 recorded and visible, never silent. The GitHub runners may be outside India; see the README's
 known-risk note.
+
+**D30. Output files always use LF, and raw files are never normalised by git.** The first CI run
+rewrote every derived CSV and markdown file with identical values, because Windows writes CRLF
+and Linux writes LF. All writers now pass `lineterminator`/`newline="\n"`. `.gitattributes`
+marks `data/raw/**` and `tests/fixtures/**` as `-text`, so git never alters sha256-verified
+bytes, and sets derived outputs to `eol=lf`. The stored 2026-09-29 snapshot CSV was
+re-normalised to LF. Its values are unchanged, and the dedupe hash covers values, not bytes.

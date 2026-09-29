@@ -1,0 +1,7 @@
+# Raw captures and test fixtures are byte-exact records (sha256-verified): never let git
+# normalise their line endings.
+data/raw/** -text
+tests/fixtures/** -text
+# Derived outputs are written with LF on every OS (so Windows and CI runs don't diff).
+data/processed/**/*.csv text eol=lf
+data/processed/**/*.md text eol=lf

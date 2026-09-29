@@ -42,9 +42,10 @@ def main() -> int:
     dq = dq_panel(indexed, icfg.cities)
 
     INDEX_DIR.mkdir(parents=True, exist_ok=True)
-    indexed.to_csv(INDEX_DIR / "thali_index.csv", index=False)
-    components.to_csv(INDEX_DIR / "components.csv", index=False)
-    dq.to_csv(INDEX_DIR / "dq_panel.csv", index=False)
+    # LF on every OS, so local (Windows) and CI (Linux) rebuilds produce identical files.
+    indexed.to_csv(INDEX_DIR / "thali_index.csv", index=False, lineterminator="\n")
+    components.to_csv(INDEX_DIR / "components.csv", index=False, lineterminator="\n")
+    dq.to_csv(INDEX_DIR / "dq_panel.csv", index=False, lineterminator="\n")
 
     print(f"coverage report: {report}")
     cols = [
