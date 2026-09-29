@@ -2,6 +2,21 @@
 
 **Live dashboard:** [https://thali-flation-index-camgsz4cceqnctimtusgw8.streamlit.app/](https://thali-flation-index-camgsz4cceqnctimtusgw8.streamlit.app/) · data refreshed daily at 19:00 IST by GitHub Actions
 
+[![Thali-flation Index dashboard: a home-cooked veg thali cost ₹22.30 on 29 Sep 2026 (index 100)](docs/images/hero-dark.png)](https://thali-flation-index-camgsz4cceqnctimtusgw8.streamlit.app/)
+
+<details>
+<summary><b>📸 Full dashboard screenshots (dark &amp; light)</b></summary>
+<br>
+
+| Dark | Light |
+|---|---|
+| ![Full dashboard in dark mode: KPI tiles, trend, ingredient breakdown, coverage and gaps, method](docs/images/full-dark.jpg) | ![Full dashboard in light mode](docs/images/full-light.jpg) |
+
+</details>
+
+<sub>Screenshots of the real dashboard on 2026-09-29, the first day of data. The live site
+adds one real day per DoCA update.</sub>
+
 A hyperlocal, high-frequency **"cost of a thali"** index for India, computed only from real
 government ingredient prices. It can be compared against official CPI, which is aggregate and
 published about 1.5 months late, to test whether it leads food inflation.
