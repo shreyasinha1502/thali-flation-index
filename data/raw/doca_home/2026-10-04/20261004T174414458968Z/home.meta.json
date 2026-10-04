@@ -1,0 +1,33 @@
+{
+  "body_file": "home.html.gz",
+  "stored_encoding": "gzip",
+  "sha256": "40c77d2e777d55fda2d33b82c5b7849f89c8a51b111e579d0c6e0858e95ef829",
+  "n_bytes": 103406,
+  "fetched_at": "2026-10-04T17:44:17.270721+00:00",
+  "url": "https://fcainfoweb.nic.in/",
+  "status": 200,
+  "content_type": "text/html; charset=utf-8",
+  "source": "doca_home",
+  "user_agent": "thaliflation/0.1.0 (food-price research)",
+  "attempts": [
+    {
+      "attempt": 1,
+      "status": 200,
+      "at": "2026-10-04T17:44:17.270721+00:00"
+    }
+  ],
+  "response_headers": {
+    "Cache-Control": "no-cache,no-cache, no-store, must-revalidate",
+    "Pragma": "no-cache,no-cache",
+    "Content-Type": "text/html; charset=utf-8",
+    "Expires": "-1,0",
+    "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "DENY, SAMEORIGIN",
+    "Content-Security-Policy": "default-src 'self'; connect-src *; font-src *; img-src * data:; media-src *; object-src *; script-src * 'unsafe-inline' 'unsafe-eval'; style-src * 'unsafe-inline';",
+    "X-XSS-Protection": "1;mode=block",
+    "Strict-Transport-Security": "max-age=31536000",
+    "Date": "Sun, 04 Oct 2026 17:44:16 GMT",
+    "Content-Length": "103406",
+    "Set-Cookie": "***redacted***"
+  }
+}
