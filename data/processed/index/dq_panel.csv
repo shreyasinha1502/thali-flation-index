@@ -1,4 +1,4 @@
 geo,thali,n_dates,n_ok,n_missing,n_excluded,first_date,last_date,dropped
-All India,nonveg_thali,9,9,0,0,2026-09-29,2026-10-07,
-All India,veg_thali,9,9,0,0,2026-09-29,2026-10-07,
+All India,nonveg_thali,10,10,0,0,2026-09-29,2026-10-08,
+All India,veg_thali,10,10,0,0,2026-09-29,2026-10-08,
 Delhi,*,0,0,0,0,,,no live source for this geography yet
